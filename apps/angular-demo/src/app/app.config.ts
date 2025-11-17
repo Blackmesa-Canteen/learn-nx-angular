@@ -19,7 +19,32 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(async () => {
       const amplifyConfig$ = inject(AMPLIFY_OUTPUTS);
       const outputs = await firstValueFrom(amplifyConfig$);
-      Amplify.configure(outputs);
+      const restConfig: Record<string, any> = {};
+      if (outputs.custom?.API) {
+        Object.entries(outputs.custom.API).forEach(([key, value]) => {
+          restConfig[key] = {
+            endpoint: value.endpoint,
+            region: value.region,
+          };
+        });
+      }
+
+      Amplify.configure({
+        ...outputs,
+        API: {
+          REST: restConfig,
+        },
+      },
+        {
+          API: {
+            REST: {
+              retryStrategy: {
+                strategy: 'no-retry' // Overrides default retry strategy
+              },
+            }
+          },
+        }
+        );
     }),
   ],
 };

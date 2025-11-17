@@ -3,7 +3,17 @@ import { Observable, shareReplay } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 export interface IAmplifyOutputs {
+  API?: {
+    [key: string]: any;
+  };
   custom: {
+    API?: {
+      [apiName: string]: {
+        endpoint: string;
+        region: string;
+        apiName: string;
+      };
+    };
     [key: string]: any;
   }
 }
