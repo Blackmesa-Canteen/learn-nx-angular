@@ -1,0 +1,45 @@
+version: 1
+applications:
+  - appRoot: apps/api
+    backend:
+      phases:
+        preBuild:
+          commands:
+            - cd ../..
+            - nvm install
+            - nvm use
+            - npm ci --cache .npm --prefer-offline
+        build:
+          commands:
+            - cd ../..
+            # Build workspace packages
+            - npx nx run-many --target=build --projects=models,webapp-shared --skip-nx-cache || true
+            # Deploy Amplify backend
+            - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+        postBuild:
+          commands:
+            - cd ../..
+            # Copy amplify_outputs.json to Angular app's public directory
+            - mkdir -p apps/angular-demo/public/.well-known
+            - cp apps/api/amplify_outputs.json apps/angular-demo/public/.well-known/amplify_outputs.json
+  - appRoot: apps/angular-demo
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - cd ../..
+            # Ensure amplify_outputs.json is available
+            - mkdir -p apps/angular-demo/public/.well-known
+            - cp apps/api/amplify_outputs.json apps/angular-demo/public/.well-known/amplify_outputs.json || echo "Waiting for backend"
+        build:
+          commands:
+            - cd ../..
+            - npx nx build angular-demo --configuration=production
+      artifacts:
+        baseDirectory: ../../dist/apps/angular-demo/browser
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - ../../node_modules/**/*
+          - ../../.nx/cache/**/*
