@@ -26,6 +26,23 @@ export default [
             },
           ],
         },
+        {
+          allow: [],
+          depConstraints: [
+            {
+              sourceTag: 'scope:shared',
+              onlyDependOnLibsWithTags: ['scope:shared'],
+            },
+            {
+              sourceTag: 'scope:webapp',
+              onlyDependOnLibsWithTags: ['scope:shared', 'scope:webapp'],
+            },
+            {
+              sourceTag: 'scope:api',
+              onlyDependOnLibsWithTags: ['scope:shared', 'scope:api'],
+            },
+          ],
+        },
       ],
     },
   },

@@ -1,0 +1,8 @@
+<div class="book-list-container">
+  <h2>Book List</h2>
+  <div class="books-grid">
+    @for (book of books; track book.id) {
+      <lib-list-item [book]="book"></lib-list-item>
+    }
+  </div>
+</div>
