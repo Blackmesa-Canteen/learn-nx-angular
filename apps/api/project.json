@@ -15,6 +15,10 @@
       "configurations": {
         "development": {
           "args": ["--node-env=development"]
+        },
+        "serverless": {
+          "main": "apps/api/src/main.serverless.ts",
+          "mode": "production"
         }
       }
     },
