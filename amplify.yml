@@ -1,41 +1,36 @@
 version: 1
-backend:
-  phases:
-    preBuild:
-      commands:
-        # Use Node version from .nvmrc
-        - nvm install
-        - nvm use
-        # Install dependencies at root (monorepo level)
-        - npm ci
-    build:
-      commands:
-        # Build workspace packages first
-        - npx nx run-many --target=build --projects=models,webapp-shared --skip-nx-cache || true
-        # Build the serverless Lambda function
-        - npx nx build-serverless api
-    postBuild:
-      commands:
-        # Copy amplify_outputs.json to frontend's public directory
-        - mkdir -p apps/angular-demo/public/.well-known
-        - cp apps/api/amplify_outputs.json apps/angular-demo/public/.well-known/amplify_outputs.json || echo "amplify_outputs.json not found yet"
-frontend:
-  phases:
-    preBuild:
-      commands:
-        # Ensure amplify_outputs.json is in the right place before frontend build
-        - mkdir -p apps/angular-demo/public/.well-known
-        - cp apps/api/amplify_outputs.json apps/angular-demo/public/.well-known/amplify_outputs.json || echo "amplify_outputs.json not found"
-    build:
-      commands:
-        # Build the Angular frontend using Nx
-        - npx nx build angular-demo --configuration=production
-  artifacts:
-    baseDirectory: dist/apps/angular-demo/browser
-    files:
-      - '**/*'
-  cache:
-    paths:
-      - node_modules/**/*
-      - .nx/cache/**/*
-      - dist/packages/**/*
+applications:
+  - appRoot: apps/angular-demo
+    backend:
+      phases:
+        preBuild:
+          commands:
+            - nvm install
+            - nvm use
+            - npm ci
+        build:
+          commands:
+            # Build only workspace packages that Lambda imports
+            - npx nx run-many --target=build --projects=models,webapp-shared --skip-nx-cache || true
+        postBuild:
+          commands:
+            - mkdir -p apps/angular-demo/public/.well-known
+            - cp apps/api/amplify_outputs.json apps/angular-demo/public/.well-known/amplify_outputs.json || echo "amplify_outputs.json not found yet"
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - mkdir -p apps/angular-demo/public/.well-known
+            - cp apps/api/amplify_outputs.json apps/angular-demo/public/.well-known/amplify_outputs.json || echo "amplify_outputs.json not found"
+        build:
+          commands:
+            - npx nx build angular-demo --configuration=production
+      artifacts:
+        baseDirectory: dist/apps/angular-demo/browser
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+          - .nx/cache/**/*
+          - dist/packages/**/*
