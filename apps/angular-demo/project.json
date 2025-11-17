@@ -50,7 +50,6 @@
       "continuous": true,
       "executor": "@angular/build:dev-server",
       "options": {
-        "browserTarget": "angular-demo:build",
         "proxyConfig": "apps/angular-demo/proxy.conf.json"
       },
       "configurations": {
