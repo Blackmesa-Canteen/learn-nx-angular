@@ -1,0 +1,38 @@
+version: 1
+backend:
+  phases:
+    preBuild:
+      commands:
+        # Use Node version from .nvmrc
+        - nvm install
+        - nvm use
+        # Install dependencies at root (monorepo level)
+        - npm ci
+    build:
+      commands:
+        # Build workspace dependencies that the API depends on
+        - npx nx build api --configuration=production
+    postBuild:
+      commands:
+        # Copy amplify_outputs.json to frontend's public directory
+        - mkdir -p apps/angular-demo/public/.well-known
+        - cp apps/api/amplify_outputs.json apps/angular-demo/public/.well-known/amplify_outputs.json || echo "amplify_outputs.json not found yet"
+frontend:
+  phases:
+    preBuild:
+      commands:
+        # Ensure amplify_outputs.json is in the right place before frontend build
+        - mkdir -p apps/angular-demo/public/.well-known
+        - cp apps/api/amplify_outputs.json apps/angular-demo/public/.well-known/amplify_outputs.json || echo "amplify_outputs.json not found"
+    build:
+      commands:
+        # Build the Angular frontend using Nx
+        - npx nx build angular-demo --configuration=production
+  artifacts:
+    baseDirectory: dist/apps/angular-demo/browser
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - .nx/cache/**/*

@@ -22,6 +22,14 @@
         }
       }
     },
+    "amplify:build": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "amplify generate --yes",
+        "cwd": "apps/api"
+      }
+    },
     "prune-lockfile": {
       "dependsOn": ["build"],
       "cache": true,

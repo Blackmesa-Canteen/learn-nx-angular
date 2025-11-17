@@ -24,6 +24,23 @@
         ],
         "styles": ["apps/angular-demo/src/styles.css"]
       },
+      "copy-amplify-outputs": {
+        "executor": "nx:run-commands",
+        "options": {
+          "commands": [
+            "mkdir -p apps/angular-demo/public/.well-known",
+            "cp apps/api/amplify_outputs.json apps/angular-demo/public/.well-known/amplify_outputs.json"
+          ],
+          "parallel": false
+        }
+      },
+      "build-with-amplify": {
+        "executor": "nx:run-commands",
+        "dependsOn": ["copy-amplify-outputs"],
+        "options": {
+          "command": "nx build angular-demo"
+        }
+      },
       "configurations": {
         "production": {
           "budgets": [
