@@ -15,8 +15,10 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@angular-demo/models": ["packages/models/src/index.ts"],
       "@angular-demo/ui": ["packages/ui/src/index.ts"],
-      "@angular-demo/utils": ["packages/utils/src/index.ts"]
+      "@angular-demo/utils": ["packages/utils/src/index.ts"],
+      "@angular-demo/webapp-shared": ["packages/webapp-shared/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
