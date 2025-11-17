@@ -11,3 +11,11 @@ export class Book {
     this.description = description;
   }
 }
+
+export interface CreateBookDto {
+  name: string;
+  author: string;
+  description?: string;
+}
+
+export interface UpdateBookDto extends Partial<CreateBookDto> {}

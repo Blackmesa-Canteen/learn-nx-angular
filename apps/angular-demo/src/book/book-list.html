@@ -1,8 +1,119 @@
 <div class="book-list-container">
-  <h2>Book List</h2>
+  <div class="header">
+    <h2>Book List</h2>
+    <button
+      class="btn btn-primary"
+      (click)="showCreateForm()"
+      [disabled]="isLoading()">
+      + Add New Book
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="error-message">
+      {{ error() }}
+      <button class="btn-close" (click)="error.set(null)">×</button>
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="loading">Loading books...</div>
+  }
+
+  <!-- Book Form Modal -->
+  @if (isFormVisible()) {
+    <dialog
+      class="modal-overlay"
+      [open]="isFormVisible()"
+      (close)="hideForm()"
+      (click)="onOverlayClick($event)"
+      (keydown)="onOverlayKeydown($event)"
+      tabindex="0">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modal-title">{{ isEditMode() ? 'Edit Book' : 'Add New Book' }}</h3>
+          <button
+            type="button"
+            class="btn-close"
+            aria-label="Close modal"
+            (click)="hideForm()">×</button>
+        </div>
+        <form class="book-form" (submit)="$event.preventDefault(); saveBook()">
+          <!-- form fields remain the same -->
+          <div class="form-group">
+            <label for="name">Title *</label>
+            <input
+              id="name"
+              type="text"
+              [value]="currentBook().name || ''"
+              (input)="updateField('name', $any($event.target).value)"
+              placeholder="Enter book title"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="author">Author *</label>
+            <input
+              id="author"
+              type="text"
+              [value]="currentBook().author || ''"
+              (input)="updateField('author', $any($event.target).value)"
+              placeholder="Enter author name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              rows="4"
+              [value]="currentBook().description || ''"
+              (input)="updateField('description', $any($event.target).value)"
+              placeholder="Enter book description"
+            ></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" (click)="hideForm()">
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="isLoading()">
+              {{ isEditMode() ? 'Update' : 'Create' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </dialog>
+  }
+
+  <!-- Books Grid -->
   <div class="books-grid">
-    @for (book of books; track book.id) {
-      <lib-list-item [book]="book"></lib-list-item>
+    @for (book of books(); track book.id) {
+      <div class="book-item-wrapper">
+        <lib-list-item [book]="book"></lib-list-item>
+        <div class="book-actions">
+          <button
+            class="btn btn-sm btn-edit"
+            (click)="showEditForm(book)"
+            [disabled]="isLoading()">
+            Edit
+          </button>
+          <button
+            class="btn btn-sm btn-delete"
+            (click)="deleteBook(book)"
+            [disabled]="isLoading()">
+            Delete
+          </button>
+        </div>
+      </div>
+    } @empty {
+      @if (!isLoading()) {
+        <div class="empty-state">
+          <p>No books found. Add your first book!</p>
+        </div>
+      }
     }
   </div>
 </div>
