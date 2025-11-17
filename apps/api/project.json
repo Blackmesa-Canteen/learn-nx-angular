@@ -22,9 +22,17 @@
         }
       }
     },
+    "build-serverless": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "webpack-cli build",
+        "args": ["--node-env=production", "--env", "entry=serverless"],
+        "cwd": "apps/api"
+      }
+    },
     "amplify:build": {
       "executor": "nx:run-commands",
-      "dependsOn": ["build"],
+      "dependsOn": ["build-serverless"],
       "options": {
         "command": "amplify generate --yes",
         "cwd": "apps/api"

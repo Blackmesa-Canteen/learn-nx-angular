@@ -10,8 +10,10 @@ backend:
         - npm ci
     build:
       commands:
-        # Build workspace dependencies that the API depends on
-        - npx nx build api --configuration=production
+        # Build workspace packages first
+        - npx nx run-many --target=build --projects=models,webapp-shared --skip-nx-cache || true
+        # Build the serverless Lambda function
+        - npx nx build-serverless api
     postBuild:
       commands:
         # Copy amplify_outputs.json to frontend's public directory
@@ -36,3 +38,4 @@ frontend:
     paths:
       - node_modules/**/*
       - .nx/cache/**/*
+      - dist/packages/**/*
